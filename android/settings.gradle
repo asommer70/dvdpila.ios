@@ -1,0 +1,3 @@
+rootProject.name = 'dvdpila_ios'
+
+include ':app'

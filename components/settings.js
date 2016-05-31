@@ -23,50 +23,51 @@ class Settings extends Component {
         data = {};
       }
       this.setState({settings: data});
-    })
+    });
 
     this.state = {
       settings: {url: ''},
     }
   }
 
-  saveSettings() {
-    console.log('this.state:', this.state);
-    store.save('settings', this.state.settings);
-
-    // Empty habits get data from server.
-    fetch(this.state.settings.url + '/dvds.json')
-      .then((response) => response.text())
-      .then((responseText) => {
-        console.log('responseText:', responseText);
-
-        // var habits = JSON.parse(responseText).habits;
-        // store.save('habits', habits);
-        //
-        // // Tell the Habit component on Main that we have some Habits, and all the other components.
-        // this.props.events.emit('got-server-habits', habits);
-        // this.props.events.emit('got-habits', habits);
-      })
-      .catch((error) => {
-        AlertIOS.prompt()
-        Alert.alert('Unable to Save Settings', 'Problem with the URL you entered could not get data.',
-                [
-                  {text: 'OK', onPress: () => console.log('OK Pressed!')},
-                ]
-        )
-      });
-
-    Alert.alert('Settings Saved', 'DVD Pila! URL: ' + this.state.settings.url,
+  badUrl() {
+    Alert.alert('Unable to Save Settings', 'Problem with the URL you entered could not get data.',
             [
               {text: 'OK', onPress: () => console.log('OK Pressed!')},
             ]
     )
   }
 
+  saveSettings() {
+    // Empty habits get data from server.
+    fetch(this.state.settings.url + '/dvds.json')
+      .then((response) => response.text())
+      .then((responseText) => {
+        var dvds = JSON.parse(responseText);
+        console.log('dvds:', dvds);
+
+        if (!dvds) {
+          this.badUrl();
+          return;
+        }
+        store.save('settings', this.state.settings);
+
+
+        Alert.alert('Settings Saved', 'DVD Pila! URL: ' + this.state.settings.url,
+                [
+                  {text: 'OK', onPress: () => console.log('OK Pressed!')},
+                ]
+        )
+      })
+      .catch((error) => {
+        this.badUrl();
+      });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Button text={'Back'} onPress={this.back.bind(this)} />
+        <Button text={'Back'} onPress={this.back.bind(this)} buttonStyle={styles.navButton} textStyle={styles.navText} />
 
         <View style={styles.wrapper}>
           <View style={styles.formWrapper}>
@@ -80,7 +81,12 @@ class Settings extends Component {
             </View>
           </View>
 
-          <Button style={styles.saveButton} text={'Save'} onPress={this.saveSettings.bind(this)} textStyle={styles.saveText} />
+          <Button
+            style={styles.saveButton}
+            text={'Save'}
+            onPress={this.saveSettings.bind(this)}
+            textStyle={styles.saveText}
+            buttonStyle={styles.saveButton} />
         </View>
       </View>
     );
@@ -90,14 +96,11 @@ class Settings extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingTop: 10
   },
 
   wrapper: {
     marginTop: 40,
-    justifyContent: 'center',
     alignSelf: 'center',
     flex: 1,
   },
@@ -112,14 +115,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#424242',
     borderRadius: 3,
-    margin: 5,
+    marginTop: 5,
+    marginBottom: 5,
     width: 200,
     alignSelf: 'flex-end',
     color: '#424242'
   },
 
+  saveButton: {
+    width: 200
+  },
+
   saveText: {
     fontSize: 16,
+  },
+
+  navButton: {
+    marginLeft: 5,
+    alignSelf: 'flex-start',
+  },
+
+  navText: {
+    fontSize: 14
   }
 
 });

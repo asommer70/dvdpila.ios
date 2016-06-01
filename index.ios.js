@@ -26,6 +26,7 @@ class dvdpila_ios extends Component {
   }
 
   render() {
+    console.log('Navigating...');
     return (
       <Navigator
         style={styles.container}

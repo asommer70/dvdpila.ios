@@ -48,11 +48,14 @@
                                                initialProperties:nil
                                                    launchOptions:launchOptions];
 
+  NSLog(@"Doing the RCTRootView...");
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
+  NSLog(@"Setting self.window.rootViewController...");
   [self.window makeKeyAndVisible];
+  NSLog(@"returning YES...");
   return YES;
 }
 
